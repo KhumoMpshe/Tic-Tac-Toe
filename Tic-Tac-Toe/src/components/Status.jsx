@@ -1,28 +1,29 @@
-import React from "react";
-import Square from "./Square";
-import Board from "./Board";
-import History from "./History";
-
-function Status({
-  winner,
-  draw,
-  currentPlayer,
-}) {
+function Status({ winner, draw, currentPlayer, players }) {
   if (winner) {
     return (
       <h2>
-        Winner: {winner}
+        Winner: {players[winner]}{" "}
+        <span className={`marker marker-${winner.toLowerCase()}`}>
+          {winner}
+        </span>
       </h2>
     );
   }
 
   if (draw) {
-    return <h2>Draw!</h2>;
+    return (
+      <h2>
+        Draw! {players.X} vs {players.O}
+      </h2>
+    );
   }
 
   return (
     <h2>
-      Next Player: {currentPlayer}
+      Next Player: {players[currentPlayer]}{" "}
+      <span className={`marker marker-${currentPlayer.toLowerCase()}`}>
+        {currentPlayer}
+      </span>
     </h2>
   );
 }

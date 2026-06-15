@@ -1,0 +1,33 @@
+:root,
+[data-theme="light"] {
+  --bg-color: #f4f4f8;
+  --text-color: #1a1a2e;
+  --square-bg: #ffffff;
+  --square-border: #333333;
+  --square-hover: #eeeeee;
+  --btn-bg: #ffffff;
+  --btn-border: #cccccc;
+  --btn-text: #1a1a2e;
+  --toggle-track: #e0e0e0;
+  --toggle-thumb: #ffffff;
+}
+
+[data-theme="dark"] {
+  --bg-color: #1a1a2e;
+  --text-color: #eaeaea;
+  --square-bg: #16213e;
+  --square-border: #0f3460;
+  --square-hover: #1f4068;
+  --btn-bg: #16213e;
+  --btn-border: #0f3460;
+  --btn-text: #eaeaea;
+  --toggle-track: #0f3460;
+  --toggle-thumb: #e94560;
+}
+
+body {
+  font-family: system-ui, -apple-system, sans-serif;
+  background-color: var(--bg-color);
+  color: var(--text-color);
+  transition: background-color 0.3s ease, color 0.3s ease;
+}

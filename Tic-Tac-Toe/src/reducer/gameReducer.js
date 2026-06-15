@@ -34,10 +34,12 @@ export function checkWinner(board) {
 export function gameReducer(state, action) {
   switch (action.type) {
     case "MAKE_MOVE": {
-      const index = action.payload;
+      const { index, elapsedMs } = action.payload;
       if (state.board[index] || state.winner) {
         return state;
       }
+
+      const previousElapsed = state.history.at(-1)?.elapsedMs ?? 0;
 
       const newBoard = [...state.board];
       newBoard[index] = state.currentPlayer;
@@ -53,11 +55,15 @@ export function gameReducer(state, action) {
         currentPlayer: state.currentPlayer === "X" ? "O" : "X",
         winner,
         draw,
-        history: [ ...state.history, {
+        history: [...state.history, {
           board: newBoard,
+          player: state.currentPlayer,
+          position: index,
           currentPlayer: state.currentPlayer === "X" ? "O" : "X",
           winner,
-          draw
+          draw,
+          elapsedMs,
+          moveDurationMs: elapsedMs - previousElapsed,
         }],
       };
     }
@@ -66,15 +72,16 @@ export function gameReducer(state, action) {
       return initialState;
 
     case "JUMP_TO_MOVE": {
-      const board = state.history[action.payload];
+      const snapshot = state.history[action.payload];
 
-      if (!board) return state;
+      if (!snapshot) return state;
 
       return {
         ...state,
-        board,
-        winner: null,
-        draw: false,
+        board: snapshot.board,
+        currentPlayer: snapshot.currentPlayer,
+        winner: snapshot.winner,
+        draw: snapshot.draw,
       };
     }
 
