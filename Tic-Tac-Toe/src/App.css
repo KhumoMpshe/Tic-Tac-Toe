@@ -179,6 +179,7 @@
 .new-players-btn,
 .player-history-btn,
 .back-btn,
+.clear-history-btn,
 .secondary-btn,
 .history button {
   padding: 10px 20px;
@@ -191,8 +192,20 @@
 }
 
 .secondary-btn,
-.back-btn {
+.back-btn,
+.clear-history-btn {
   width: 100%;
+}
+
+.player-history-actions {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.clear-history-btn:disabled {
+  opacity: 0.45;
+  cursor: not-allowed;
 }
 
 .game-timer {

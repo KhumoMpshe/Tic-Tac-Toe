@@ -88,3 +88,8 @@ export function recordGame({ players, result, durationMs, moves }) {
 
   return gameRecord;
 }
+
+export function clearAllHistory() {
+  localStorage.removeItem(PLAYERS_KEY);
+  localStorage.removeItem(GAMES_KEY);
+}

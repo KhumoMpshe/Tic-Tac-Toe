@@ -1,7 +1,8 @@
+import { useState } from "react";
 import { formatTime, formatDuration } from "../utilis/formatTime";
 import { getPlayerCharacter, getPlayerName, getCharacterLabel } from "../utilis/characterOptions";
 import PlayerMarker from "./PlayerMarker";
-import { loadPlayers, loadGames } from "../utilis/playerStorage";
+import { loadPlayers, loadGames, clearAllHistory } from "../utilis/playerStorage";
 
 const SQUARE_LABELS = [
   "top-left",
@@ -16,10 +17,24 @@ const SQUARE_LABELS = [
 ];
 
 function PlayerHistoryPage({ onBack }) {
+  const [, setHistoryVersion] = useState(0);
+
   const sortedPlayers = Object.values(loadPlayers()).sort(
     (a, b) => b.lastPlayed - a.lastPlayed
   );
   const games = loadGames();
+  const hasHistory = sortedPlayers.length > 0 || games.length > 0;
+
+  const handleClearHistory = () => {
+    const confirmed = window.confirm(
+      "Clear all player stats and game history from this device? This cannot be undone."
+    );
+
+    if (!confirmed) return;
+
+    clearAllHistory();
+    setHistoryVersion((version) => version + 1);
+  };
 
   const formatResult = (game) => {
     if (game.result === "draw") {
@@ -120,9 +135,19 @@ function PlayerHistoryPage({ onBack }) {
         )}
       </section>
 
-      <button type="button" className="back-btn" onClick={onBack}>
-        Back
-      </button>
+      <div className="player-history-actions">
+        <button
+          type="button"
+          className="clear-history-btn"
+          onClick={handleClearHistory}
+          disabled={!hasHistory}
+        >
+          Clear History
+        </button>
+        <button type="button" className="back-btn" onClick={onBack}>
+          Back
+        </button>
+      </div>
     </div>
   );
 }
