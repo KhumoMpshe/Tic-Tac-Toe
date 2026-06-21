@@ -4,9 +4,27 @@
   box-sizing: border-box;
 }
 
+:root {
+  --board-cell-size: min(
+    100px,
+    calc((100vw - (2 * var(--app-padding-x)) - (2 * var(--board-gap))) / 3)
+  );
+  --board-gap: 10px;
+  --board-side-width: auto;
+  --board-side-padding-y: 10px;
+  --board-side-padding-x: 12px;
+  --board-side-marker-size: 44px;
+  --game-timer-width: 270px;
+  --app-padding-x: 20px;
+  --app-padding-top: 72px;
+  --app-padding-bottom: 24px;
+  --content-max-width: 520px;
+}
+
 .app {
   text-align: center;
   min-height: 100vh;
+  min-height: 100dvh;
   position: relative;
 
   display: flex;
@@ -16,12 +34,18 @@
   align-items: center;
 
   gap: 20px;
+  width: 100%;
+  padding:
+    max(var(--app-padding-top), env(safe-area-inset-top, 0px))
+    max(var(--app-padding-x), env(safe-area-inset-right, 0px))
+    max(var(--app-padding-bottom), env(safe-area-inset-bottom, 0px))
+    max(var(--app-padding-x), env(safe-area-inset-left, 0px));
 }
 
 .theme-toggle {
   position: absolute;
-  top: 20px;
-  right: 20px;
+  top: max(20px, env(safe-area-inset-top, 0px));
+  right: max(20px, env(safe-area-inset-right, 0px));
   display: flex;
   align-items: center;
   gap: 10px;
@@ -76,13 +100,13 @@
 
 .board {
   display: grid;
-  grid-template-columns: repeat(3, 100px);
-  gap: 10px;
+  grid-template-columns: repeat(3, var(--board-cell-size));
+  gap: var(--board-gap);
 }
 
 .square {
-  width: 100px;
-  height: 100px;
+  width: var(--board-cell-size);
+  height: var(--board-cell-size);
   display: flex;
   align-items: center;
   justify-content: center;
@@ -213,7 +237,7 @@
   flex-direction: column;
   align-items: center;
   gap: 4px;
-  width: 270px;
+  width: min(100%, var(--game-timer-width));
   padding: 8px 16px;
   border: 1px solid var(--btn-border);
   border-radius: 25px;
@@ -243,7 +267,7 @@
   display: flex;
   flex-direction: column;
   gap: 20px;
-  width: min(100%, 520px);
+  width: min(100%, var(--content-max-width));
   padding: 24px;
   border: 1px solid var(--btn-border);
   border-radius: 12px;
@@ -469,24 +493,53 @@
 }
 
 .board-side .player-marker-size-side {
-  width: 196px;
-  height: 196px;
+  width: var(--board-side-marker-size);
+  height: var(--board-side-marker-size);
 }
 
 .game-board-area {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  grid-template-areas:
+    "player-x player-o"
+    "board board";
+  gap: 10px;
+  width: 100%;
+  max-width: 100%;
+}
+
+.board-side-x {
+  grid-area: player-x;
+}
+
+.board-side-o {
+  grid-area: player-o;
+}
+
+.game-board-area > .board {
+  grid-area: board;
+  justify-self: center;
+}
+
+.game-screen {
   display: flex;
+  flex-direction: column;
   align-items: center;
-  justify-content: center;
   gap: 20px;
+  width: 100%;
+  max-width: 100%;
+  overflow-x: clip;
 }
 
 .board-side {
   display: flex;
-  flex-direction: column;
+  flex-direction: row;
+  justify-content: center;
   align-items: center;
   gap: 8px;
-  width: 250px;
-  padding: 50px 20px;
+  width: 100%;
+  min-width: 0;
+  padding: var(--board-side-padding-y) var(--board-side-padding-x);
   border-radius: 999px;
   background-color: rgba(208, 183, 206, 0.5);
   opacity: 0.55;
@@ -499,25 +552,71 @@
   }
 }
 
+.board-side .player-marker-size-side {
+  flex-shrink: 0;
+}
+
 .board-side-name {
   font-size: 0.85rem;
   font-weight: 600;
-  text-align: center;
+  text-align: left;
   word-break: break-word;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  flex: 1;
+  min-width: 0;
 }
 
 .board-side-active {
   opacity: 1;
-  transform: scale(1.05);
+  transform: none;
   border-color: var(--square-border);
   box-shadow: 0 4px 16px rgba(0, 0, 0, 0.12);
 }
 
 .board-side-winner {
   opacity: 1;
-  transform: scale(1.1);
+  transform: none;
   border-color: var(--square-border);
   box-shadow: 0 6px 20px rgba(0, 0, 0, 0.18);
+}
+
+@media (min-width: 1025px) {
+  :root {
+    --board-side-width: 250px;
+    --board-side-padding-y: 50px;
+    --board-side-padding-x: 20px;
+    --board-side-marker-size: 196px;
+  }
+
+  .game-board-area {
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    justify-content: center;
+    gap: 20px;
+  }
+
+  .board-side {
+    flex-direction: column;
+    width: var(--board-side-width);
+  }
+
+  .board-side-name {
+    text-align: center;
+    white-space: normal;
+    overflow: visible;
+    flex: unset;
+  }
+
+  .board-side-active {
+    transform: scale(1.05);
+  }
+
+  .board-side-winner {
+    transform: scale(1.1);
+  }
 }
 
 .players-bar {
@@ -548,6 +647,18 @@
   font-weight: 600;
   text-transform: uppercase;
   font-size: 0.85rem;
+}
+
+.status {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  max-width: min(100%, var(--content-max-width));
+  font-size: clamp(1rem, 4vw, 1.5rem);
+  line-height: 1.3;
+  padding: 0 4px;
 }
 
 .game-actions {
@@ -657,52 +768,4 @@
   0%, 100% { transform: rotate(0deg) translateY(0); }
   25%      { transform: rotate(-1.5deg) translateY(-2px); }
   75%      { transform: rotate(1.5deg) translateY(-2px); }
-}
-
-@media (max-width: 600px) {
-  .theme-toggle {
-    top: 12px;
-    right: 12px;
-    padding: 6px 10px;
-  }
-
-  .theme-toggle-labels {
-    display: none;
-  }
-
-  .character-picker {
-    grid-template-columns: repeat(4, 1fr);
-  }
-
-  .game-board-area {
-    gap: 10px;
-  }
-
-  .board-side {
-    width: 64px;
-    padding: 12px 6px;
-  }
-
-  .board-side-name {
-    font-size: 0.75rem;
-  }
-
-  .board-side .player-marker-size-side {
-    width: 56px;
-    height: 56px;
-  }
-
-  .board {
-    grid-template-columns:
-      repeat(3, 80px);
-  }
-
-  .square {
-    width: 80px;
-    height: 80px;
-  }
-
-  .square .marker {
-    font-size: 2.6rem;
-  }
 }

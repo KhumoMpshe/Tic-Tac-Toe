@@ -1,5 +1,6 @@
 import { useReducer, useState, useEffect, useRef, useCallback } from 'react';
 import './App.css'
+import './Responsiveness.css'
 import Board from "./components/Board";
 import Status from "./components/Status";
 import History from "./components/History";
@@ -176,10 +177,9 @@ function App() {
       )}
 
       {screen === "game" && players && (
-        <>
+        <div className="game-screen">
           <h1 className="h1-bubble">Tic Tac Toe</h1>
           <p className="bubble-tagline">✕ ⭕ let's play ⭕ ✕</p>
-          
 
           <GameTimer
             elapsedMs={elapsedMs}
@@ -208,10 +208,10 @@ function App() {
               <span className="board-side-name">{getPlayerName(players, "X")}</span>
             </aside>
 
-          <Board
-            board={state.board}
-            handleMove={handleMove}
-          />
+            <Board
+              board={state.board}
+              handleMove={handleMove}
+            />
 
             <aside
               className={`board-side board-side-o${
@@ -266,7 +266,7 @@ function App() {
               players={players}
             />
           )}
-        </>
+        </div>
       )}
     </div>
   );
