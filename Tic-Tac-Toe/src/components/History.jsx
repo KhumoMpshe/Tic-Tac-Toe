@@ -1,4 +1,6 @@
 import { formatTime, formatDuration } from "../utilis/formatTime";
+import { getPlayerCharacter, getPlayerName } from "../utilis/characterOptions";
+import PlayerMarker from "./PlayerMarker";
 
 const SQUARE_LABELS = [
   "top-left",
@@ -25,10 +27,12 @@ function History({ history, jumpToMove, players }) {
             <li key={index}>
               <button onClick={() => jumpToMove(index)}>
                 <span className="history-move-main">
-                  Move {index + 1}: {players[move.player]}{" "}
-                  <span className={`marker marker-${move.player.toLowerCase()}`}>
-                    {move.player}
-                  </span>
+                  Move {index + 1}: {getPlayerName(players, move.player)}{" "}
+                  <PlayerMarker
+                    symbol={move.player}
+                    character={getPlayerCharacter(players, move.player)}
+                    size="sm"
+                  />
                   {" "}→ {SQUARE_LABELS[move.position]}
                 </span>
                 {move.elapsedMs != null && (

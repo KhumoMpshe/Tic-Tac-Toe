@@ -1,7 +1,4 @@
-function Square({
-  value,
-  onClick,
-}) {
+function Square({ value, onClick }) {
   const squareClass = value
     ? `square square-${value.toLowerCase()}`
     : "square";
@@ -20,4 +17,5 @@ function Square({
     </button>
   );
 }
+
 export default Square;

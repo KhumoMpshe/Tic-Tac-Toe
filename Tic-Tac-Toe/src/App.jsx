@@ -10,6 +10,8 @@ import ThemeToggle from "./components/ThemeToggle";
 import { gameReducer, initialState, } from "./reducer/gameReducer";
 import { celebrateWinner } from "./utilis/celebrateWinner";
 import { registerPlayers, recordGame } from "./utilis/playerStorage";
+import { getPlayerCharacter, getPlayerName } from "./utilis/characterOptions";
+import PlayerMarker from "./components/PlayerMarker";
 
 
 function App() {
@@ -34,7 +36,7 @@ function App() {
   const isGameOver = Boolean(state.winner || state.draw);
 
   const resetTimer = useCallback(() => {
-    gameStartRef.current = Date.now();
+    gameStartRef.current = null;
     setElapsedMs(0);
     savedGameRef.current = false;
   }, []);
@@ -53,7 +55,13 @@ function App() {
   }, [state.winner, players]);
 
   useEffect(() => {
-    if (screen !== "game" || !players || isGameOver) {
+    if (
+      screen !== "game" ||
+      !players ||
+      isGameOver ||
+      state.history.length === 0 ||
+      !gameStartRef.current
+    ) {
       return;
     }
 
@@ -62,7 +70,7 @@ function App() {
     }, 1000);
 
     return () => window.clearInterval(intervalId);
-  }, [screen, players, isGameOver]);
+  }, [screen, players, isGameOver, state.history.length]);
 
   useEffect(() => {
     if (isGameOver && gameStartRef.current) {
@@ -107,6 +115,10 @@ function App() {
 
   const handleMove = (index) => {
     if (isGameOver) return;
+
+    if (gameStartRef.current === null) {
+      gameStartRef.current = Date.now();
+    }
 
     dispatch({
       type: "MAKE_MOVE",
@@ -165,21 +177,14 @@ function App() {
 
       {screen === "game" && players && (
         <>
-          <h1>Tic Tac Toe</h1>
+          <h1 className="h1-bubble">Tic Tac Toe</h1>
+          <p className="bubble-tagline">✕ ⭕ let's play ⭕ ✕</p>
+          
 
-          <div className="players-bar">
-            <span className="player-badge player-x">
-              {players.X}{" "}
-              <span className="marker marker-x">X</span>
-            </span>
-            <span className="players-vs">vs</span>
-            <span className="player-badge player-o">
-              {players.O}{" "}
-              <span className="marker marker-o">O</span>
-            </span>
-          </div>
-
-          <GameTimer elapsedMs={elapsedMs} isPaused={isGameOver} />
+          <GameTimer
+            elapsedMs={elapsedMs}
+            isPaused={isGameOver || state.history.length === 0}
+          />
 
           <Status
             winner={state.winner}
@@ -188,10 +193,40 @@ function App() {
             players={players}
           />
 
+          <div className="game-board-area">
+            <aside
+              className={`board-side board-side-x${
+                !isGameOver && state.currentPlayer === "X" ? " board-side-active" : ""
+              }${state.winner === "X" ? " board-side-winner" : ""}`}
+              aria-label={`${getPlayerName(players, "X")}, ${getPlayerCharacter(players, "X")}`}
+            >
+              <PlayerMarker
+                symbol="X"
+                character={getPlayerCharacter(players, "X")}
+                size="side"
+              />
+              <span className="board-side-name">{getPlayerName(players, "X")}</span>
+            </aside>
+
           <Board
             board={state.board}
             handleMove={handleMove}
           />
+
+            <aside
+              className={`board-side board-side-o${
+                !isGameOver && state.currentPlayer === "O" ? " board-side-active" : ""
+              }${state.winner === "O" ? " board-side-winner" : ""}`}
+              aria-label={`${getPlayerName(players, "O")}, ${getPlayerCharacter(players, "O")}`}
+            >
+              <PlayerMarker
+                symbol="O"
+                character={getPlayerCharacter(players, "O")}
+                size="side"
+              />
+              <span className="board-side-name">{getPlayerName(players, "O")}</span>
+            </aside>
+          </div>
 
           <div className="game-actions">
             <button

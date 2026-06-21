@@ -1,4 +1,6 @@
 import { formatTime, formatDuration } from "../utilis/formatTime";
+import { getPlayerCharacter, getPlayerName, getCharacterLabel } from "../utilis/characterOptions";
+import PlayerMarker from "./PlayerMarker";
 import { loadPlayers, loadGames } from "../utilis/playerStorage";
 
 const SQUARE_LABELS = [
@@ -24,8 +26,9 @@ function PlayerHistoryPage({ onBack }) {
       return "Draw";
     }
 
-    const winnerName = game.players[game.result];
-    return `${winnerName} won`;
+    const winnerName = getPlayerName(game.players, game.result);
+    const winnerCharacter = getCharacterLabel(game.players, game.result);
+    return `${winnerName} won (${winnerCharacter})`;
   };
 
   const formatDate = (timestamp) =>
@@ -74,11 +77,19 @@ function PlayerHistoryPage({ onBack }) {
               <li key={game.id} className="game-history-item">
                 <div className="game-history-header">
                   <span>
-                    {game.players.X}{" "}
-                    <span className="marker marker-x">X</span>
+                    {getPlayerName(game.players, "X")}{" "}
+                    <PlayerMarker
+                      symbol="X"
+                      character={getPlayerCharacter(game.players, "X")}
+                      size="sm"
+                    />
                     {" vs "}
-                    {game.players.O}{" "}
-                    <span className="marker marker-o">O</span>
+                    {getPlayerName(game.players, "O")}{" "}
+                    <PlayerMarker
+                      symbol="O"
+                      character={getPlayerCharacter(game.players, "O")}
+                      size="sm"
+                    />
                   </span>
                   <span className="game-history-result">{formatResult(game)}</span>
                 </div>
@@ -89,10 +100,12 @@ function PlayerHistoryPage({ onBack }) {
                   <ol className="game-history-moves">
                     {game.moves.map((move, index) => (
                       <li key={index}>
-                        Move {index + 1}: {game.players[move.player]}{" "}
-                        <span className={`marker marker-${move.player.toLowerCase()}`}>
-                          {move.player}
-                        </span>
+                        Move {index + 1}: {getPlayerName(game.players, move.player)}{" "}
+                        <PlayerMarker
+                          symbol={move.player}
+                          character={getPlayerCharacter(game.players, move.player)}
+                          size="sm"
+                        />
                         {" "}→ {SQUARE_LABELS[move.position]} @ {formatTime(move.elapsedMs)}
                         {move.moveDurationMs != null && (
                           <> (+{formatDuration(move.moveDurationMs)})</>
